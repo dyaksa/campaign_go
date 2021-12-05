@@ -1,7 +1,6 @@
 package main
 
 import (
-	"campaignproject/campaign"
 	"campaignproject/handler"
 	"campaignproject/user"
 	"fmt"
@@ -22,27 +21,11 @@ func main() {
 	userService := user.NewService(userRepository)
 	userHandler := handler.NewUserHandler(userService)
 
-	campaignRepository := campaign.NewRepository(db)
-	campaignService := campaign.NewService(campaignRepository)
-	campaignHandler := handler.NewCampaignHandler(campaignService)
-
 	router := gin.Default()
 
 	app := router.Group("/api/v1")
 	app.POST("/users", userHandler.RegisterUser)
-	app.POST("/campaign", campaignHandler.InputInsertCampaign)
-	app.GET("/campaign", campaignHandler.GetCampaign)
+	app.POST("/login", userHandler.Login)
 	router.Run()
-
-	// userInput := user.RegisterUserInput{}
-	// userInput.Email = "diasnour0395@gmail.com"
-	// userInput.Name = "Dyaksa Jauhruddin"
-	// userInput.Occupation = "programmer"
-	// userInput.Password = "secret"
-	// userInput.Role = "user"
-
-	// userService.RegisterInput(userInput)
-
-	// userHandler := handler.NewUserHandler(userService)
 
 }

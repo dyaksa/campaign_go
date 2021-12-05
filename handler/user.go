@@ -36,3 +36,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	response := helper.APIResponse("user success has been registered", http.StatusOK, "success", userFormatter)
 	c.JSON(http.StatusOK, response)
 }
+
+func (h *userHandler) Login(c *gin.Context) {
+
+}
