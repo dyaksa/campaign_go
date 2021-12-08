@@ -26,6 +26,7 @@ func main() {
 	app := router.Group("/api/v1")
 	app.POST("/users", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
+	app.PATCH("/upload", userHandler.UpdateAvatar)
 	router.Run()
 
 }

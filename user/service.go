@@ -9,7 +9,7 @@ import (
 type Service interface {
 	RegisterInput(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
-	UpdateAvatar(user User, filename string) (User, error)
+	UpdateAvatar(ID int, filename string) (User, error)
 }
 
 type service struct {
@@ -58,10 +58,10 @@ func (s *service) Login(input LoginInput) (User, error) {
 	return existUser, nil
 }
 
-func (s *service) UpdateAvatar(user User, filename string) (User, error) {
-	existUser, err := s.repository.FindById(user.ID)
+func (s *service) UpdateAvatar(ID int, filename string) (User, error) {
+	existUser, err := s.repository.FindById(ID)
 	if err != nil {
-		return user, err
+		return existUser, err
 	}
 	existUser.AvatarFileName = filename
 	updated, err := s.repository.SaveAvatar(existUser)

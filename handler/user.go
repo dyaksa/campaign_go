@@ -3,6 +3,7 @@ package handler
 import (
 	"campaignproject/helper"
 	"campaignproject/user"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -59,4 +60,26 @@ func (h *userHandler) Login(c *gin.Context) {
 	responseUserFormatter := user.FormatUser(existUser, "tokentokentoken")
 	responseJson := helper.APIResponse("success login", http.StatusOK, "success", responseUserFormatter)
 	c.JSON(http.StatusOK, responseJson)
+}
+
+func (h *userHandler) UpdateAvatar(c *gin.Context) {
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		responseJSON := helper.APIResponse("fail upload avatar", http.StatusBadRequest, "error", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	userID := 12
+	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
+	c.SaveUploadedFile(file, path)
+	_, err = h.service.UpdateAvatar(userID, path)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("errors update avatar", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+	}
+	data := gin.H{"is_uploaded": true}
+	responseJSON := helper.APIResponse("success update avatar", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, responseJSON)
 }
