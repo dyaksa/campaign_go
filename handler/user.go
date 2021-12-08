@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"campaignproject/auth"
 	"campaignproject/helper"
 	"campaignproject/user"
 	"fmt"
@@ -10,11 +11,12 @@ import (
 )
 
 type userHandler struct {
-	service user.Service
+	service     user.Service
+	authService auth.Service
 }
 
-func NewUserHandler(service user.Service) *userHandler {
-	return &userHandler{service: service}
+func NewUserHandler(service user.Service, authService auth.Service) *userHandler {
+	return &userHandler{service: service, authService: authService}
 }
 
 func (h *userHandler) RegisterUser(c *gin.Context) {
@@ -57,7 +59,14 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	responseUserFormatter := user.FormatUser(existUser, "tokentokentoken")
+	token, err := h.authService.GenerateToken(existUser.ID, existUser.Email, existUser.Name, existUser.Occupation)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("token error", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+	}
+
+	responseUserFormatter := user.FormatUser(existUser, token)
 	responseJson := helper.APIResponse("success login", http.StatusOK, "success", responseUserFormatter)
 	c.JSON(http.StatusOK, responseJson)
 }

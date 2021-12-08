@@ -1,6 +1,7 @@
 package main
 
 import (
+	"campaignproject/auth"
 	"campaignproject/handler"
 	"campaignproject/user"
 	"fmt"
@@ -17,9 +18,10 @@ func main() {
 		panic(err.Error())
 	}
 	fmt.Println("success connect db")
+	authService := auth.NewAuthService()
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
 
