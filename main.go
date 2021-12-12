@@ -2,6 +2,7 @@ package main
 
 import (
 	"campaignproject/auth"
+	"campaignproject/campaign"
 	"campaignproject/handler"
 	"campaignproject/middleware"
 	"campaignproject/user"
@@ -21,6 +22,7 @@ func main() {
 	fmt.Println("success connect db")
 	authService := auth.NewAuthService()
 
+	//* user
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 	userHandler := handler.NewUserHandler(userService, authService)
@@ -28,11 +30,17 @@ func main() {
 	middleware := middleware.NewMiddleware(authService, userService)
 	authMiddleware := middleware.AuthUser()
 
+	//* campaign
+	campaignRepository := campaign.NewRepository(db)
+	campaignService := campaign.NewService(campaignRepository)
+	campaignHandler := handler.NewCampaignHandler(campaignService)
+
 	router := gin.Default()
 	app := router.Group("/api/v1")
-	app.POST("/users", userHandler.RegisterUser)
+	app.POST("/register", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
 	app.PATCH("/upload", authMiddleware, userHandler.UpdateAvatar)
+	app.POST("/campaign", authMiddleware, campaignHandler.InputInsertCampaign)
 	router.Run()
 
 }

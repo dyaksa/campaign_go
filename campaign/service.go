@@ -19,6 +19,7 @@ func NewService(repository Repository) *service {
 func (s *service) InputInsertCampaign(input CampaignInput) (Campaign, error) {
 	campaign := Campaign{}
 	campaign.Name = input.Name
+	campaign.UserId = input.UserId
 	campaign.Description = input.Description
 	campaign.ShortDescription = input.ShortDescription
 	campaign.Perks = input.Perks

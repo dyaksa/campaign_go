@@ -2,6 +2,8 @@ package handler
 
 import (
 	"campaignproject/campaign"
+	"campaignproject/helper"
+	"campaignproject/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,18 +18,26 @@ func NewCampaignHandler(service campaign.Service) *campaignHandler {
 }
 
 func (h *campaignHandler) InputInsertCampaign(c *gin.Context) {
+	user := c.MustGet("user").(user.User)
 	var input campaign.CampaignInput
+	input.UserId = user.ID
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		errors := helper.FormatterErroValidation(err)
+		data := gin.H{"errors": errors}
+		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
 	}
-	campaign, err := h.service.InputInsertCampaign(input)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-	}
-	c.JSON(http.StatusOK, campaign)
-}
 
-func (h *campaignHandler) GetCampaign(c *gin.Context) {
-	c.JSON(http.StatusOK, nil)
+	newCampaign, err := h.service.InputInsertCampaign(input)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	formatter := campaign.CreateFormat(newCampaign)
+	responseJSON := helper.APIResponse("success create campaign", http.StatusCreated, "success", formatter)
+	c.JSON(http.StatusOK, responseJSON)
 }
