@@ -25,12 +25,14 @@ func main() {
 	userService := user.NewService(userRepository)
 	userHandler := handler.NewUserHandler(userService, authService)
 
-	router := gin.Default()
+	middleware := middleware.NewMiddleware(authService, userService)
+	authMiddleware := middleware.AuthUser()
 
+	router := gin.Default()
 	app := router.Group("/api/v1")
 	app.POST("/users", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
-	app.PATCH("/upload", middleware.AuthUser(authService), userHandler.UpdateAvatar)
+	app.PATCH("/upload", authMiddleware, userHandler.UpdateAvatar)
 	router.Run()
 
 }
