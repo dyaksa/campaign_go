@@ -3,6 +3,7 @@ package main
 import (
 	"campaignproject/auth"
 	"campaignproject/handler"
+	"campaignproject/middleware"
 	"campaignproject/user"
 	"fmt"
 
@@ -19,6 +20,7 @@ func main() {
 	}
 	fmt.Println("success connect db")
 	authService := auth.NewAuthService()
+
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 	userHandler := handler.NewUserHandler(userService, authService)
@@ -28,7 +30,7 @@ func main() {
 	app := router.Group("/api/v1")
 	app.POST("/users", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
-	app.PATCH("/upload", userHandler.UpdateAvatar)
+	app.PATCH("/upload", middleware.AuthUser(authService), userHandler.UpdateAvatar)
 	router.Run()
 
 }

@@ -59,7 +59,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := h.authService.GenerateToken(existUser.ID, existUser.Email, existUser.Name, existUser.Occupation)
+	token, err := h.authService.GenerateToken(existUser.ID)
 	if err != nil {
 		data := gin.H{"errors": err.Error()}
 		responseJSON := helper.APIResponse("token error", http.StatusBadRequest, "errors", data)
