@@ -79,10 +79,10 @@ func (h *userHandler) UpdateAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, responseJSON)
 		return
 	}
-	userID := 12
-	path := fmt.Sprintf("images/%d-%s", userID, file.Filename)
+	user := c.MustGet("user").(user.User)
+	path := fmt.Sprintf("images/%d-%s", user.ID, file.Filename)
 	c.SaveUploadedFile(file, path)
-	_, err = h.service.UpdateAvatar(userID, path)
+	_, err = h.service.UpdateAvatar(user.ID, path)
 	if err != nil {
 		data := gin.H{"errors": err.Error()}
 		responseJSON := helper.APIResponse("errors update avatar", http.StatusBadRequest, "errors", data)
