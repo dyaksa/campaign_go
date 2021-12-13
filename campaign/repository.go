@@ -41,7 +41,8 @@ func (r *repository) Save(campaign Campaign) (Campaign, error) {
 
 func (r *repository) FindByUserId(ID int, paginate helper.Pagination) (*helper.Pagination, error) {
 	var campaigns []Campaign
-	r.db.Scopes(pagination(campaigns, &paginate, r.db)).Where("user_id = ?", ID).Find(&campaigns)
-	paginate.Rows = campaigns
+	r.db.Scopes(pagination(campaigns, &paginate, r.db)).Preload("CampaignImages", "is_primary = 1").Where("user_id = ?", ID).Find(&campaigns)
+	formatter := CreateListFormatter(campaigns)
+	paginate.Rows = formatter
 	return &paginate, nil
 }

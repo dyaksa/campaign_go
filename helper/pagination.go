@@ -1,10 +1,10 @@
 package helper
 
 type Pagination struct {
-	Limit      int         `form:"limit"`
-	Page       int         `form:"page"`
+	Limit      int         `form:"limit" json:"limit"`
+	Page       int         `form:"page" json:"page"`
 	TotalPages int         `json:"total_pages"`
-	Sort       string      `form:"sort"`
+	Sort       string      `form:"sort" json:"sort"`
 	TotalRows  int64       `json:"total_rows"`
 	Rows       interface{} `json:"rows"`
 }
