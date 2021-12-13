@@ -44,10 +44,4 @@ func (r *repository) FindByUserId(ID int, paginate helper.Pagination) (*helper.P
 	r.db.Scopes(pagination(campaigns, &paginate, r.db)).Where("user_id = ?", ID).Find(&campaigns)
 	paginate.Rows = campaigns
 	return &paginate, nil
-	// var campaigns []Campaign
-	// err := r.db.Where("user_id = ?", ID).Find(&campaigns).Error
-	// if err != nil {
-	// 	return campaigns, err
-	// }
-	// return campaigns, nil
 }
