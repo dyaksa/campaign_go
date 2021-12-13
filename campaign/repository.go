@@ -11,6 +11,7 @@ type Repository interface {
 	Save(campaign Campaign) (Campaign, error)
 	FindByUserId(ID int, paginate helper.Pagination) (*helper.Pagination, error)
 	FindAll(paginate helper.Pagination) (*helper.Pagination, error)
+	FindBySlug(slug string) (Campaign, error)
 }
 
 type repository struct {
@@ -60,4 +61,13 @@ func (r *repository) FindAll(paginate helper.Pagination) (*helper.Pagination, er
 	formatter := CreateListFormatter(campaigns)
 	paginate.Rows = formatter
 	return &paginate, nil
+}
+
+func (r *repository) FindBySlug(slug string) (Campaign, error) {
+	campaign := Campaign{}
+	err := r.db.Where("slug = ?", slug).Preload("CampaignImages").Preload("User").Find(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
 }

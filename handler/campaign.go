@@ -82,3 +82,17 @@ func (h *campaignHandler) FindAllCampaign(c *gin.Context) {
 	responseJSON := helper.APIResponse("success get all campaign", http.StatusOK, "success", campaigns)
 	c.JSON(http.StatusOK, responseJSON)
 }
+
+func (h *campaignHandler) DetailBySlug(c *gin.Context) {
+	slug := c.Param("slug")
+	detail, err := h.service.DetailCampaignBySlug(slug)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	formatter := campaign.CreateDetailFormatter(detail)
+	responseJSON := helper.APIResponse("get detail success", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, responseJSON)
+}

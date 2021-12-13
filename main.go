@@ -42,6 +42,7 @@ func main() {
 	app.PATCH("/upload", authMiddleware, userHandler.UpdateAvatar)
 
 	app.GET("/campaign", campaignHandler.FindAllCampaign)
+	app.GET("/campaign/:slug", campaignHandler.DetailBySlug)
 	app.GET("/auth/user/campaign", authMiddleware, campaignHandler.UserHaveCampaigns)
 	app.POST("/campaign", authMiddleware, campaignHandler.InputInsertCampaign)
 	router.Run(":8080")

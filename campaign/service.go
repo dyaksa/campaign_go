@@ -12,6 +12,7 @@ type Service interface {
 	InputInsertCampaign(input CampaignInput) (Campaign, error)
 	FindAllUserCampaign(ID int, paginate helper.Pagination) (*helper.Pagination, error)
 	FindAllCampaign(paginate helper.Pagination) (*helper.Pagination, error)
+	DetailCampaignBySlug(slug string) (Campaign, error)
 }
 
 type service struct {
@@ -58,4 +59,12 @@ func (s *service) FindAllCampaign(paginate helper.Pagination) (*helper.Paginatio
 		return campaigns, err
 	}
 	return campaigns, nil
+}
+
+func (s *service) DetailCampaignBySlug(slug string) (Campaign, error) {
+	campaign, err := s.repository.FindBySlug(slug)
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
 }

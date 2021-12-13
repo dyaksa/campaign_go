@@ -1,10 +1,14 @@
 package campaign
 
-import "time"
+import (
+	"campaignproject/user"
+	"time"
+)
 
 type Campaign struct {
 	ID               int
 	UserId           int
+	User             user.User
 	Name             string
 	ShortDescription string
 	Description      string
