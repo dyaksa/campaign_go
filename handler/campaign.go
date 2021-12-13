@@ -45,7 +45,13 @@ func (h *campaignHandler) InputInsertCampaign(c *gin.Context) {
 func (h *campaignHandler) UserHaveCampaigns(c *gin.Context) {
 	user := c.MustGet("user").(user.User)
 	pagination := helper.Pagination{}
-	c.Bind(&pagination)
+	err := c.Bind(&pagination)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("unproccesable entity", http.StatusUnprocessableEntity, "errors", data)
+		c.JSON(http.StatusUnprocessableEntity, responseJSON)
+		return
+	}
 	campaigns, err := h.service.FindAllUserCampaign(user.ID, pagination)
 	if err != nil {
 		data := gin.H{"errors": err.Error()}
@@ -54,5 +60,25 @@ func (h *campaignHandler) UserHaveCampaigns(c *gin.Context) {
 		return
 	}
 	responseJSON := helper.APIResponse("get all user auth campaign", http.StatusOK, "succes", campaigns)
+	c.JSON(http.StatusOK, responseJSON)
+}
+
+func (h *campaignHandler) FindAllCampaign(c *gin.Context) {
+	pagination := helper.Pagination{}
+	err := c.Bind(&pagination)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("unproccesable entity", http.StatusUnprocessableEntity, "errors", data)
+		c.JSON(http.StatusUnprocessableEntity, responseJSON)
+		return
+	}
+	campaigns, err := h.service.FindAllCampaign(pagination)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	responseJSON := helper.APIResponse("success get all campaign", http.StatusOK, "success", campaigns)
 	c.JSON(http.StatusOK, responseJSON)
 }
