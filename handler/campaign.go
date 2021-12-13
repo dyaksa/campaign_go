@@ -41,3 +41,18 @@ func (h *campaignHandler) InputInsertCampaign(c *gin.Context) {
 	responseJSON := helper.APIResponse("success create campaign", http.StatusCreated, "success", formatter)
 	c.JSON(http.StatusOK, responseJSON)
 }
+
+func (h *campaignHandler) UserHaveCampaigns(c *gin.Context) {
+	user := c.MustGet("user").(user.User)
+	pagination := helper.Pagination{}
+	c.Bind(&pagination)
+	campaigns, err := h.service.FindAllUserCampaign(user.ID, pagination)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	responseJSON := helper.APIResponse("get all user auth campaign", http.StatusOK, "succes", campaigns)
+	c.JSON(http.StatusOK, responseJSON)
+}

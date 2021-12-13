@@ -40,7 +40,8 @@ func main() {
 	app.POST("/register", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
 	app.PATCH("/upload", authMiddleware, userHandler.UpdateAvatar)
-	app.POST("/campaign", authMiddleware, campaignHandler.InputInsertCampaign)
-	router.Run()
 
+	app.GET("/auth/user/campaign", authMiddleware, campaignHandler.UserHaveCampaigns)
+	app.POST("/campaign", authMiddleware, campaignHandler.InputInsertCampaign)
+	router.Run(":8080")
 }
