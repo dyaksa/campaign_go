@@ -71,6 +71,34 @@ func (h *userHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, responseJson)
 }
 
+func (h *userHandler) CheckEmail(c *gin.Context) {
+	input := user.CheckEmailInput{}
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("unprocessable entity", http.StatusUnprocessableEntity, "errors", data)
+		c.JSON(http.StatusUnprocessableEntity, responseJSON)
+		return
+	}
+	exist, err := h.service.EmailChecker(input.Email)
+	if err != nil {
+		data := gin.H{"error": err.Error()}
+		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+
+	if exist.ID != 0 {
+		data := gin.H{"is_available": false}
+		responseJSON := helper.APIResponse("email already in use", http.StatusConflict, "errors", data)
+		c.JSON(http.StatusConflict, responseJSON)
+		return
+	}
+	data := gin.H{"is_available": true}
+	responseJSON := helper.APIResponse("email available", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, responseJSON)
+}
+
 func (h *userHandler) UpdateAvatar(c *gin.Context) {
 	file, err := c.FormFile("avatar")
 	if err != nil {

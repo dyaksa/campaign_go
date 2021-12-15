@@ -39,6 +39,7 @@ func main() {
 	app := router.Group("/api/v1")
 	app.POST("/register", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
+	app.POST("/email_checker", userHandler.CheckEmail)
 	app.PATCH("/upload", authMiddleware, userHandler.UpdateAvatar)
 
 	app.GET("/campaign", campaignHandler.FindAllCampaign)
