@@ -5,6 +5,7 @@ import (
 	"campaignproject/helper"
 	"campaignproject/user"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -64,6 +65,7 @@ func (h *campaignHandler) UserHaveCampaigns(c *gin.Context) {
 }
 
 func (h *campaignHandler) FindAllCampaign(c *gin.Context) {
+	userId, _ := strconv.Atoi(c.Query("user_id"))
 	pagination := helper.Pagination{}
 	err := c.Bind(&pagination)
 	if err != nil {
@@ -72,7 +74,7 @@ func (h *campaignHandler) FindAllCampaign(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, responseJSON)
 		return
 	}
-	campaigns, err := h.service.FindAllCampaign(pagination)
+	campaigns, err := h.service.FindAllCampaign(userId, pagination)
 	if err != nil {
 		data := gin.H{"errors": err.Error()}
 		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)

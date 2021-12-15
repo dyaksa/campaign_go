@@ -41,8 +41,9 @@ type ImageFormatter struct {
 	FileName  string `json:"file_name"`
 	IsPrimary int    `json:"is_primary"`
 }
-type ListFormatter struct {
+type CampaignFormatter struct {
 	ID               int       `json:"id"`
+	UserId           int       `json:"user_id"`
 	Name             string    `json:"name"`
 	Slug             string    `json:"slug"`
 	Image            string    `json:"images"`
@@ -101,24 +102,30 @@ func CreateFormat(campaign Campaign) CreateFormatter {
 	return formatter
 }
 
-func CreateListFormatter(campaigns []Campaign) []ListFormatter {
-	formatter := []ListFormatter{}
-	for _, campaign := range campaigns {
-		campaignFormatter := ListFormatter{}
-		campaignFormatter.ID = campaign.ID
-		campaignFormatter.Name = campaign.Name
-		campaignFormatter.Slug = campaign.Slug
-		campaignFormatter.ShortDescription = campaign.ShortDescription
-		campaignFormatter.Description = campaign.Description
-		campaignFormatter.BackerCount = campaign.BackerCount
-		campaignFormatter.Image = ""
-		if len(campaign.CampaignImages) > 0 {
-			campaignFormatter.Image = campaign.CampaignImages[0].FileName
-		}
-		campaignFormatter.GoalAmount = campaign.GoalAmount
-		campaignFormatter.CurrentAmount = campaign.CurrentAmount
-		campaignFormatter.CreatedAt = campaign.CreatedAt
-		formatter = append(formatter, campaignFormatter)
+func CreateCampaignFormatter(campaign Campaign) CampaignFormatter {
+	campaignFormatter := CampaignFormatter{}
+	campaignFormatter.ID = campaign.ID
+	campaignFormatter.UserId = campaign.UserId
+	campaignFormatter.Name = campaign.Name
+	campaignFormatter.Slug = campaign.Slug
+	campaignFormatter.ShortDescription = campaign.ShortDescription
+	campaignFormatter.Description = campaign.Description
+	campaignFormatter.BackerCount = campaign.BackerCount
+	campaignFormatter.Image = ""
+	if len(campaign.CampaignImages) > 0 {
+		campaignFormatter.Image = campaign.CampaignImages[0].FileName
 	}
-	return formatter
+	campaignFormatter.GoalAmount = campaign.GoalAmount
+	campaignFormatter.CurrentAmount = campaign.CurrentAmount
+	campaignFormatter.CreatedAt = campaign.CreatedAt
+	return campaignFormatter
+}
+
+func CampaignsFormatter(campaigns []Campaign) []CampaignFormatter {
+	campaignsFormatter := []CampaignFormatter{}
+	for _, campaign := range campaigns {
+		campaignFormatter := CreateCampaignFormatter(campaign)
+		campaignsFormatter = append(campaignsFormatter, campaignFormatter)
+	}
+	return campaignsFormatter
 }

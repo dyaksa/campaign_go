@@ -11,7 +11,7 @@ import (
 type Service interface {
 	InputInsertCampaign(input CampaignInput) (Campaign, error)
 	FindAllUserCampaign(ID int, paginate helper.Pagination) (*helper.Pagination, error)
-	FindAllCampaign(paginate helper.Pagination) (*helper.Pagination, error)
+	FindAllCampaign(UserId int, paginate helper.Pagination) (*helper.Pagination, error)
 	DetailCampaignBySlug(slug string) (Campaign, error)
 }
 
@@ -53,7 +53,14 @@ func (s *service) FindAllUserCampaign(ID int, paginate helper.Pagination) (*help
 	return campaigns, nil
 }
 
-func (s *service) FindAllCampaign(paginate helper.Pagination) (*helper.Pagination, error) {
+func (s *service) FindAllCampaign(UserId int, paginate helper.Pagination) (*helper.Pagination, error) {
+	if UserId != 0 {
+		campaigns, err := s.repository.FindByUserId(UserId, paginate)
+		if err != nil {
+			return campaigns, err
+		}
+		return campaigns, nil
+	}
 	campaigns, err := s.repository.FindAll(paginate)
 	if err != nil {
 		return campaigns, err
