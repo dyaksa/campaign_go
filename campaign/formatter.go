@@ -39,7 +39,7 @@ type ProjectLoader struct {
 type ImageFormatter struct {
 	ID        int    `json:"id"`
 	FileName  string `json:"file_name"`
-	IsPrimary int    `json:"is_primary"`
+	IsPrimary bool   `json:"is_primary"`
 }
 type CampaignFormatter struct {
 	ID               int       `json:"id"`
@@ -67,10 +67,14 @@ func CreateDetailFormatter(campaign Campaign) DetailCampaignFormatter {
 
 	imgFormatter := []ImageFormatter{}
 	for _, image := range campaign.CampaignImages {
+		isPrimary := false
 		imageFormatter := ImageFormatter{}
 		imageFormatter.ID = image.ID
 		imageFormatter.FileName = image.FileName
-		imageFormatter.IsPrimary = image.IsPrimary
+		if image.IsPrimary == 1 {
+			isPrimary = true
+		}
+		imageFormatter.IsPrimary = isPrimary
 		imgFormatter = append(imgFormatter, imageFormatter)
 	}
 
