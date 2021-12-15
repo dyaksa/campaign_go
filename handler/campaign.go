@@ -86,8 +86,22 @@ func (h *campaignHandler) FindAllCampaign(c *gin.Context) {
 }
 
 func (h *campaignHandler) DetailBySlug(c *gin.Context) {
-	slug := c.Param("slug")
-	detail, err := h.service.DetailCampaignBySlug(slug)
+	param := campaign.DetailCampaignInput{}
+	err := c.ShouldBindUri(&param)
+	if err != nil {
+		errors := helper.FormatterErroValidation(err)
+		responseJSON := helper.APIResponse("bad request error", http.StatusBadRequest, "errors", errors)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+
+	detail, err := h.service.DetailCampaignBySlug(param.Slug)
+	if detail.ID == 0 {
+		responseJSON := helper.APIResponse("not found", http.StatusNotFound, "errors", nil)
+		c.JSON(http.StatusNotFound, responseJSON)
+		return
+	}
+
 	if err != nil {
 		data := gin.H{"errors": err.Error()}
 		responseJSON := helper.APIResponse("bad request", http.StatusBadRequest, "errors", data)

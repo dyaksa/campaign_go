@@ -10,3 +10,7 @@ type CampaignInput struct {
 	GoalAmount       int    `json:"goal_amount" binding:"required"`
 	CurrentAmount    int    `json:"current_amount" binding:"required"`
 }
+
+type DetailCampaignInput struct {
+	Slug string `uri:"slug" binding:"required"`
+}

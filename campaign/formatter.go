@@ -56,13 +56,14 @@ type CampaignFormatter struct {
 }
 
 func CreateDetailFormatter(campaign Campaign) DetailCampaignFormatter {
+	detailFormatter := DetailCampaignFormatter{}
 	projectLoader := ProjectLoader{
 		ID:             campaign.User.ID,
 		Name:           campaign.User.Name,
 		AvatarFileName: campaign.User.AvatarFileName,
 	}
 
-	arrPerks := strings.Split(campaign.Perks, " ")
+	perks := strings.Split(campaign.Perks, " ")
 
 	imgFormatter := []ImageFormatter{}
 	for _, image := range campaign.CampaignImages {
@@ -73,17 +74,20 @@ func CreateDetailFormatter(campaign Campaign) DetailCampaignFormatter {
 		imgFormatter = append(imgFormatter, imageFormatter)
 	}
 
-	detailFormatter := DetailCampaignFormatter{
-		ID:               campaign.ID,
-		Slug:             campaign.Slug,
-		ShortDescription: campaign.ShortDescription,
-		Description:      campaign.Description,
-		BackerCount:      campaign.BackerCount,
-		GoalAmount:       campaign.GoalAmount,
-		CurrentAmount:    campaign.CurrentAmount,
-		User:             projectLoader,
-		CampaignImages:   imgFormatter,
-		Perks:            arrPerks,
+	detailFormatter.ID = campaign.ID
+	detailFormatter.Slug = campaign.Slug
+	detailFormatter.ShortDescription = campaign.ShortDescription
+	detailFormatter.Description = campaign.Description
+	detailFormatter.BackerCount = campaign.BackerCount
+	detailFormatter.GoalAmount = campaign.GoalAmount
+	detailFormatter.CurrentAmount = campaign.CurrentAmount
+	detailFormatter.User = projectLoader
+	detailFormatter.CampaignImages = imgFormatter
+	detailFormatter.Perks = perks
+
+	detailFormatter.Image = ""
+	if len(campaign.CampaignImages) != 0 {
+		detailFormatter.Image = campaign.CampaignImages[0].FileName
 	}
 	return detailFormatter
 }

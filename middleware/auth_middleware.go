@@ -12,7 +12,7 @@ import (
 )
 
 type authHeader struct {
-	IDToken string `header:"Authorization"`
+	IDToken string `header:"Authorization" binding:"required"`
 }
 
 type middleware struct {
