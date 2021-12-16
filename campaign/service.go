@@ -2,6 +2,8 @@ package campaign
 
 import (
 	"campaignproject/helper"
+	"campaignproject/user"
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,6 +15,7 @@ type Service interface {
 	FindAllUserCampaign(ID int, paginate helper.Pagination) (*helper.Pagination, error)
 	FindAllCampaign(UserId int, paginate helper.Pagination) (*helper.Pagination, error)
 	DetailCampaignBySlug(slug string) (Campaign, error)
+	UpdateCampaign(InputID user.User, campaignID DetailCampaignInputId, input CampaignInput) (Campaign, error)
 }
 
 type service struct {
@@ -74,4 +77,27 @@ func (s *service) DetailCampaignBySlug(slug string) (Campaign, error) {
 		return campaign, err
 	}
 	return campaign, nil
+}
+
+func (s *service) UpdateCampaign(InputID user.User, campaignID DetailCampaignInputId, input CampaignInput) (Campaign, error) {
+	campaign, err := s.repository.FindById(campaignID.ID)
+	if err != nil {
+		return campaign, err
+	}
+
+	if campaign.UserId != InputID.ID {
+		return campaign, errors.New("user cannot access this campaign")
+	}
+
+	campaign.Name = input.Name
+	campaign.ShortDescription = input.ShortDescription
+	campaign.Description = input.Description
+	campaign.BackerCount = input.BackerCount
+	campaign.GoalAmount = input.GoalAmount
+	saved, err := s.repository.Updated(campaign)
+	if err != nil {
+		return saved, err
+	}
+	return saved, nil
+
 }

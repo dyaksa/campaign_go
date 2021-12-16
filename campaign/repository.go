@@ -12,6 +12,8 @@ type Repository interface {
 	FindByUserId(ID int, paginate helper.Pagination) (*helper.Pagination, error)
 	FindAll(paginate helper.Pagination) (*helper.Pagination, error)
 	FindBySlug(slug string) (Campaign, error)
+	FindById(ID int) (Campaign, error)
+	Updated(campaign Campaign) (Campaign, error)
 }
 
 type repository struct {
@@ -44,6 +46,14 @@ func (r *repository) Save(campaign Campaign) (Campaign, error) {
 	return campaign, nil
 }
 
+func (r *repository) Updated(campaign Campaign) (Campaign, error) {
+	err := r.db.Save(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
+}
+
 func (r *repository) FindByUserId(ID int, paginate helper.Pagination) (*helper.Pagination, error) {
 	var campaigns []Campaign
 	err := r.db.Scopes(pagination(campaigns, &paginate, r.db)).Preload("CampaignImages", "is_primary = 1").Where("user_id = ?", ID).Find(&campaigns).Error
@@ -69,6 +79,15 @@ func (r *repository) FindAll(paginate helper.Pagination) (*helper.Pagination, er
 func (r *repository) FindBySlug(slug string) (Campaign, error) {
 	campaign := Campaign{}
 	err := r.db.Where("slug = ?", slug).Preload("CampaignImages").Preload("User").Find(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
+}
+
+func (r *repository) FindById(ID int) (Campaign, error) {
+	campaign := Campaign{}
+	err := r.db.Where("id = ?", ID).Find(&campaign).Error
 	if err != nil {
 		return campaign, err
 	}

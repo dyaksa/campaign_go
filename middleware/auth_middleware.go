@@ -29,8 +29,8 @@ func (m *middleware) AuthUser() gin.HandlerFunc {
 		var h authHeader
 		err := c.ShouldBindHeader(&h)
 		if err != nil {
-			data := gin.H{"errors": err}
-			responsJSON := helper.APIResponse("invalid arguments", http.StatusUnauthorized, "errors", data)
+			data := gin.H{"is_valid": false}
+			responsJSON := helper.APIResponse(err.Error(), http.StatusUnauthorized, "errors", data)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, responsJSON)
 			return
 		}

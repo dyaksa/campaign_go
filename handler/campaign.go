@@ -112,3 +112,34 @@ func (h *campaignHandler) DetailBySlug(c *gin.Context) {
 	responseJSON := helper.APIResponse("get detail success", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, responseJSON)
 }
+
+func (h *campaignHandler) UpdateCampaign(c *gin.Context) {
+	currentUser := c.MustGet("user").(user.User)
+	campaignID := campaign.DetailCampaignInputId{}
+	input := campaign.CampaignInput{}
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatterErroValidation(err)
+		responseJSON := helper.APIResponse("updated failed", http.StatusBadRequest, "errors", errors)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+
+	err = c.ShouldBindUri(&campaignID)
+	if err != nil {
+		responseJSON := helper.APIResponse("updated failed", http.StatusBadRequest, "errors", nil)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+
+	campaign, err := h.service.UpdateCampaign(currentUser, campaignID, input)
+	if err != nil {
+		responseJSON := helper.APIResponse("updated campaign failed", http.StatusBadRequest, "errors", err.Error())
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+
+	responseJSON := helper.APIResponse("success updated campaign", http.StatusOK, "success", campaign)
+	c.JSON(http.StatusOK, responseJSON)
+}

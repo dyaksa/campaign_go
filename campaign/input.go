@@ -10,9 +10,13 @@ type CampaignInput struct {
 	Perks            string `json:"perks" binding:"required"`
 	BackerCount      int    `json:"backer_count" binding:"required"`
 	GoalAmount       int    `json:"goal_amount" binding:"required"`
-	CurrentAmount    int    `json:"current_amount" binding:"required"`
+	CurrentAmount    int    `json:"current_amount"`
 }
 
 type DetailCampaignInput struct {
 	Slug string `uri:"slug" binding:"required"`
+}
+
+type DetailCampaignInputId struct {
+	ID int `uri:"id" binding:"required"`
 }
