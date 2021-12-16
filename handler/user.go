@@ -35,7 +35,15 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	userFormatter := user.FormatUser(newUser, "tokentokentoken")
+
+	token, err := h.authService.GenerateToken(newUser.ID)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("failed register user", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	userFormatter := user.FormatUser(newUser, token)
 	response := helper.APIResponse("user success has been registered", http.StatusOK, "success", userFormatter)
 	c.JSON(http.StatusOK, response)
 }

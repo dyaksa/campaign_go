@@ -19,9 +19,9 @@ func NewCampaignHandler(service campaign.Service) *campaignHandler {
 }
 
 func (h *campaignHandler) InputInsertCampaign(c *gin.Context) {
-	user := c.MustGet("user").(user.User)
+	currentUser := c.MustGet("user").(user.User)
 	var input campaign.CampaignInput
-	input.UserId = user.ID
+	input.User = currentUser
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		errors := helper.FormatterErroValidation(err)

@@ -1,7 +1,9 @@
 package campaign
 
+import "campaignproject/user"
+
 type CampaignInput struct {
-	UserId           int    `binding:"required"`
+	User             user.User
 	Name             string `json:"name" binding:"required"`
 	ShortDescription string `json:"short_description" binding:"required"`
 	Description      string `json:"description" binding:"required"`

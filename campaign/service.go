@@ -27,7 +27,7 @@ func (s *service) InputInsertCampaign(input CampaignInput) (Campaign, error) {
 	time := time.Now().Format("20060102150405")
 	campaign := Campaign{}
 	campaign.Name = input.Name
-	campaign.UserId = input.UserId
+	campaign.User = input.User
 	campaign.Description = input.Description
 	campaign.ShortDescription = input.ShortDescription
 	campaign.Perks = input.Perks
