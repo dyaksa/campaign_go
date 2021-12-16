@@ -133,13 +133,13 @@ func (h *campaignHandler) UpdateCampaign(c *gin.Context) {
 		return
 	}
 
-	campaign, err := h.service.UpdateCampaign(currentUser, campaignID, input)
+	newCampaign, err := h.service.UpdateCampaign(currentUser, campaignID, input)
 	if err != nil {
 		responseJSON := helper.APIResponse("updated campaign failed", http.StatusBadRequest, "errors", err.Error())
 		c.JSON(http.StatusBadRequest, responseJSON)
 		return
 	}
-
-	responseJSON := helper.APIResponse("success updated campaign", http.StatusOK, "success", campaign)
+	formatter := campaign.CreateFormat(newCampaign)
+	responseJSON := helper.APIResponse("success updated campaign", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, responseJSON)
 }

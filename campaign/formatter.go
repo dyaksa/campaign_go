@@ -12,6 +12,9 @@ type CreateFormatter struct {
 	Slug             string    `json:"slug"`
 	ShortDescription string    `json:"short_description"`
 	Perks            string    `json:"perks"`
+	GoalAmount       int       `json:"goal_amount"`
+	CurrentAmount    int       `json:"current_amount"`
+	BeckerCount      int       `json:"becker_count"`
 	CreatedAt        time.Time `json:"created_at"`
 	UpdatedAt        time.Time `json:"updated_at"`
 }
@@ -104,6 +107,9 @@ func CreateFormat(campaign Campaign) CreateFormatter {
 		Slug:             campaign.Slug,
 		ShortDescription: campaign.ShortDescription,
 		Perks:            campaign.Perks,
+		BeckerCount:      campaign.BackerCount,
+		GoalAmount:       campaign.GoalAmount,
+		CurrentAmount:    campaign.CurrentAmount,
 		CreatedAt:        campaign.CreatedAt,
 		UpdatedAt:        campaign.UpdatedAt,
 	}

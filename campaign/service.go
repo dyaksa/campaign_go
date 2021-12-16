@@ -94,6 +94,7 @@ func (s *service) UpdateCampaign(InputID user.User, campaignID DetailCampaignInp
 	campaign.Description = input.Description
 	campaign.BackerCount = input.BackerCount
 	campaign.GoalAmount = input.GoalAmount
+	campaign.User = InputID
 	saved, err := s.repository.Updated(campaign)
 	if err != nil {
 		return saved, err
