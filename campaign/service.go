@@ -16,6 +16,7 @@ type Service interface {
 	FindAllCampaign(UserId int, paginate helper.Pagination) (*helper.Pagination, error)
 	DetailCampaignBySlug(slug string) (Campaign, error)
 	UpdateCampaign(InputID user.User, campaignID DetailCampaignInputId, input CampaignInput) (Campaign, error)
+	UploadCampaignImages(input CampaignImagesInput, FileName string) (CampaignImages, error)
 }
 
 type service struct {
@@ -101,4 +102,34 @@ func (s *service) UpdateCampaign(InputID user.User, campaignID DetailCampaignInp
 	}
 	return saved, nil
 
+}
+
+func (s *service) UploadCampaignImages(input CampaignImagesInput, FileName string) (CampaignImages, error) {
+	campaignImages := CampaignImages{}
+	isPrimary := 0
+	campaign, err := s.repository.FindById(input.CampaignID)
+
+	if err != nil {
+		return campaignImages, err
+	}
+
+	if campaign.UserId != input.User.ID {
+		return campaignImages, errors.New("user cannot upload campaign images")
+	}
+
+	if input.IsPrimary {
+		isPrimary = 1
+		_, err := s.repository.MarkAllCampaignImegesIsPrimaryFalse(input.CampaignID)
+		if err != nil {
+			return campaignImages, err
+		}
+	}
+	campaignImages.IsPrimary = isPrimary
+	campaignImages.CampaignId = input.CampaignID
+	campaignImages.FileName = FileName
+	saved, err := s.repository.SaveCampaignImages(campaignImages)
+	if err != nil {
+		return campaignImages, err
+	}
+	return saved, nil
 }

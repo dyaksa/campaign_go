@@ -4,6 +4,7 @@ import (
 	"campaignproject/campaign"
 	"campaignproject/helper"
 	"campaignproject/user"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -141,5 +142,39 @@ func (h *campaignHandler) UpdateCampaign(c *gin.Context) {
 	}
 	formatter := campaign.CreateFormat(newCampaign)
 	responseJSON := helper.APIResponse("success updated campaign", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, responseJSON)
+}
+
+func (h *campaignHandler) UploadCampaignImages(c *gin.Context) {
+	user := c.MustGet("user").(user.User)
+	input := campaign.CampaignImagesInput{}
+	input.User = user
+	file, err := c.FormFile("file")
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		responseJSON := helper.APIResponse("uploaded image faile", http.StatusUnprocessableEntity, "errors", data)
+		c.JSON(http.StatusUnprocessableEntity, responseJSON)
+		return
+	}
+
+	err = c.ShouldBind(&input)
+	if err != nil {
+		errors := helper.FormatterErroValidation(err)
+		responseJSON := helper.APIResponse("upload image failed", http.StatusUnprocessableEntity, "errors", errors)
+		c.JSON(http.StatusUnprocessableEntity, responseJSON)
+		return
+	}
+	path := fmt.Sprintf("images/%d-%s", user.ID, file.Filename)
+	c.SaveUploadedFile(file, path)
+	_, err = h.service.UploadCampaignImages(input, path)
+
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		responseJSON := helper.APIResponse(err.Error(), http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	data := gin.H{"is_uploaded": true}
+	responseJSON := helper.APIResponse("uploaded campaign images success", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, responseJSON)
 }
