@@ -5,6 +5,7 @@ import (
 	"campaignproject/campaign"
 	"campaignproject/handler"
 	"campaignproject/middleware"
+	"campaignproject/transaction"
 	"campaignproject/user"
 	"fmt"
 
@@ -35,6 +36,11 @@ func main() {
 	campaignService := campaign.NewService(campaignRepository)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
 
+	//* transactions
+	transactionsRepository := transaction.NewRepository(db)
+	transactionsService := transaction.NewService(transactionsRepository)
+	transactionsHandler := handler.NewTransactionsHandler(transactionsService)
+
 	router := gin.Default()
 	router.Static("/images", "./images")
 	app := router.Group("/api/v1")
@@ -49,6 +55,8 @@ func main() {
 	app.PUT("/campaign/:id", authMiddleware, campaignHandler.UpdateCampaign)
 	app.GET("/auth/user/campaign", authMiddleware, campaignHandler.UserHaveCampaigns)
 	app.POST("/campaign/upload/images", authMiddleware, campaignHandler.UploadCampaignImages)
+
+	app.GET("/transactions/campaign/:id", transactionsHandler.GetByCampaignID)
 
 	router.Run(":8080")
 }
