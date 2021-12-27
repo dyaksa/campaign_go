@@ -38,7 +38,7 @@ func main() {
 
 	//* transactions
 	transactionsRepository := transaction.NewRepository(db)
-	transactionsService := transaction.NewService(transactionsRepository)
+	transactionsService := transaction.NewService(transactionsRepository, campaignRepository)
 	transactionsHandler := handler.NewTransactionsHandler(transactionsService)
 
 	router := gin.Default()
@@ -56,7 +56,7 @@ func main() {
 	app.GET("/auth/user/campaign", authMiddleware, campaignHandler.UserHaveCampaigns)
 	app.POST("/campaign/upload/images", authMiddleware, campaignHandler.UploadCampaignImages)
 
-	app.GET("/transactions/campaign/:id", transactionsHandler.GetByCampaignID)
+	app.GET("/transactions/campaign/:id", authMiddleware, transactionsHandler.GetByCampaignID)
 
 	router.Run(":8080")
 }

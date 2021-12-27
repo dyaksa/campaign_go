@@ -3,33 +3,46 @@ package handler
 import (
 	"campaignproject/helper"
 	"campaignproject/transaction"
+	"campaignproject/user"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type handler struct {
+type transactionsHandler struct {
 	service transaction.Service
 }
 
-func NewTransactionsHandler(service transaction.Service) *handler {
-	return &handler{service: service}
+func NewTransactionsHandler(service transaction.Service) *transactionsHandler {
+	return &transactionsHandler{service: service}
 }
 
-func (h *handler) GetByCampaignID(c *gin.Context) {
+func (h *transactionsHandler) GetByCampaignID(c *gin.Context) {
 	var input transaction.GetCampaignID
-	err := c.ShouldBindUri(&input)
+	var pagination helper.Pagination
+	currentUser := c.MustGet("user").(user.User)
+	err := c.Bind(&pagination)
 	if err != nil {
 		errors := helper.FormatterErroValidation(err)
 		data := gin.H{"errors": errors}
-		responseJSON := helper.APIResponse("failed get transaction", http.StatusUnprocessableEntity, "failed", data)
+		responseJSON := helper.APIResponse("failed get transactions", http.StatusUnprocessableEntity, "errors", data)
 		c.JSON(http.StatusUnprocessableEntity, responseJSON)
 		return
 	}
-	transactions, err := h.service.GetTransacationsByCampaignID(input.ID)
+
+	err = c.ShouldBindUri(&input)
+	if err != nil {
+		errors := helper.FormatterErroValidation(err)
+		data := gin.H{"errors": errors}
+		responseJSON := helper.APIResponse("failed get transaction", http.StatusUnprocessableEntity, "errors", data)
+		c.JSON(http.StatusUnprocessableEntity, responseJSON)
+		return
+	}
+	input.User = currentUser
+	transactions, err := h.service.GetTransacationsByCampaignID(input, pagination)
 	if err != nil {
 		data := gin.H{"errors": err.Error()}
-		responseJSON := helper.APIResponse("error get transactions", http.StatusBadRequest, "failed", data)
+		responseJSON := helper.APIResponse("error get transactions", http.StatusBadRequest, "errors", data)
 		c.JSON(http.StatusBadRequest, responseJSON)
 		return
 	}
