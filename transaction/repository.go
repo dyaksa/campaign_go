@@ -39,6 +39,7 @@ func (r *repository) GetByCampaignID(input GetCampaignID, paginate helper.Pagina
 	if err != nil {
 		return &paginate, err
 	}
-	paginate.Rows = transactions
+	campaignFormatter := FormatCampaignTransactions(transactions)
+	paginate.Rows = campaignFormatter
 	return &paginate, nil
 }
