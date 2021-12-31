@@ -47,7 +47,7 @@ func main() {
 	app.POST("/register", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
 	app.POST("/email_checker", userHandler.CheckEmail)
-	app.PATCH("/upload", authMiddleware, userHandler.UpdateAvatar)
+	app.POST("/upload", authMiddleware, userHandler.UpdateAvatar)
 
 	app.GET("/campaign", campaignHandler.FindAllCampaign)
 	app.POST("/campaign", authMiddleware, campaignHandler.InputInsertCampaign)
@@ -57,6 +57,7 @@ func main() {
 	app.POST("/campaign/upload/images", authMiddleware, campaignHandler.UploadCampaignImages)
 
 	app.GET("/transactions/campaign/:id", authMiddleware, transactionsHandler.GetByCampaignID)
+	app.GET("/transactions/user", authMiddleware, transactionsHandler.GetTransactionsByUserID)
 
 	router.Run(":8080")
 }

@@ -8,7 +8,8 @@ import (
 )
 
 type Repository interface {
-	GetByCampaignID(input GetCampaignID, paginate helper.Pagination) (*helper.Pagination, error)
+	GetByCampaignID(campaignID int, paginate helper.Pagination) (*helper.Pagination, error)
+	GetByUserId(UserID int, paginate helper.Pagination) (*helper.Pagination, error)
 }
 
 type repository struct {
@@ -33,13 +34,24 @@ func pagination(value interface{}, paginate *helper.Pagination, db *gorm.DB) fun
 	}
 }
 
-func (r *repository) GetByCampaignID(input GetCampaignID, paginate helper.Pagination) (*helper.Pagination, error) {
+func (r *repository) GetByCampaignID(campaignID int, paginate helper.Pagination) (*helper.Pagination, error) {
 	var transactions []Transaction
-	err := r.db.Scopes(pagination(transactions, &paginate, r.db)).Preload("User").Where("campaign_id = ?", input.ID).Find(&transactions).Error
+	err := r.db.Scopes(pagination(transactions, &paginate, r.db)).Preload("User").Where("campaign_id = ?", campaignID).Find(&transactions).Error
 	if err != nil {
 		return &paginate, err
 	}
 	campaignFormatter := FormatCampaignTransactions(transactions)
 	paginate.Rows = campaignFormatter
+	return &paginate, nil
+}
+
+func (r *repository) GetByUserId(UserID int, paginate helper.Pagination) (*helper.Pagination, error) {
+	var transactions []Transaction
+	err := r.db.Scopes(pagination(transactions, &paginate, r.db)).Preload("Campaign.CampaignImages", "campaign_images.is_primary = 1").Preload("User").Where("user_id = ?", UserID).Find(&transactions).Error
+	if err != nil {
+		return &paginate, err
+	}
+	transactionsFormatter := FormatterUserTransactions(transactions)
+	paginate.Rows = transactionsFormatter
 	return &paginate, nil
 }

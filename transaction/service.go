@@ -8,6 +8,7 @@ import (
 
 type Service interface {
 	GetTransacationsByCampaignID(input GetCampaignID, paginate helper.Pagination) (*helper.Pagination, error)
+	GetTransactionsByUserID(campaignID int, paginate helper.Pagination) (*helper.Pagination, error)
 }
 
 type service struct {
@@ -20,7 +21,7 @@ func NewService(repository Repository, campaignRepository campaign.Repository) *
 }
 
 func (s *service) GetTransacationsByCampaignID(input GetCampaignID, paginate helper.Pagination) (*helper.Pagination, error) {
-	transactions, err := s.repository.GetByCampaignID(input, paginate)
+	transactions, err := s.repository.GetByCampaignID(input.ID, paginate)
 	if err != nil {
 		return transactions, err
 	}
@@ -35,4 +36,12 @@ func (s *service) GetTransacationsByCampaignID(input GetCampaignID, paginate hel
 	}
 
 	return transactions, err
+}
+
+func (s *service) GetTransactionsByUserID(UserID int, paginate helper.Pagination) (*helper.Pagination, error) {
+	transactions, err := s.repository.GetByUserId(UserID, paginate)
+	if err != nil {
+		return transactions, err
+	}
+	return transactions, nil
 }

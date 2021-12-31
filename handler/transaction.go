@@ -13,6 +13,7 @@ type transactionsHandler struct {
 	service transaction.Service
 }
 
+
 func NewTransactionsHandler(service transaction.Service) *transactionsHandler {
 	return &transactionsHandler{service: service}
 }
@@ -47,5 +48,20 @@ func (h *transactionsHandler) GetByCampaignID(c *gin.Context) {
 		return
 	}
 	responseJSON := helper.APIResponse("success get transactions by campaign", http.StatusOK, "success", transactions)
+	c.JSON(http.StatusOK, responseJSON)
+}
+
+func (h *transactionsHandler) GetTransactionsByUserID(c *gin.Context) {
+	currentUser := c.MustGet("user").(user.User)
+	pagination := helper.Pagination{}
+	c.Bind(&pagination)
+	transactions, err := h.service.GetTransactionsByUserID(currentUser.ID, pagination)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("failed get transactions by user id", http.StatusBadRequest, "errors", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	responseJSON := helper.APIResponse("success get transactions user", http.StatusOK, "success", transactions)
 	c.JSON(http.StatusOK, responseJSON)
 }
