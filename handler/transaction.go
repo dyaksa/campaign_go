@@ -79,13 +79,14 @@ func (h *transactionsHandler) CreateTransaction(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, responseJSON)
 		return
 	}
-	transaction, err := h.service.SaveTransaction(input)
+	dataTransaction, err := h.service.SaveTransaction(input)
 	if err != nil {
 		data := gin.H{"errors": err.Error()}
 		responseJSON := helper.APIResponse("failed create transaction", http.StatusBadRequest, "errors", data)
 		c.JSON(http.StatusBadRequest, responseJSON)
 		return
 	}
-	responseJSON := helper.APIResponse("success create transaction", http.StatusCreated, "success", transaction)
+	formatter := transaction.TransactionFormatter(dataTransaction)
+	responseJSON := helper.APIResponse("success create transaction", http.StatusCreated, "success", formatter)
 	c.JSON(http.StatusCreated, responseJSON)
 }
