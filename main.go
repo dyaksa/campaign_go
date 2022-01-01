@@ -5,6 +5,7 @@ import (
 	"campaignproject/campaign"
 	"campaignproject/handler"
 	"campaignproject/middleware"
+	"campaignproject/payment"
 	"campaignproject/transaction"
 	"campaignproject/user"
 	"fmt"
@@ -30,6 +31,7 @@ func main() {
 
 	middleware := middleware.NewMiddleware(authService, userService)
 	authMiddleware := middleware.AuthUser()
+	paymentService := payment.NewPaymantService()
 
 	//* campaign
 	campaignRepository := campaign.NewRepository(db)
@@ -38,7 +40,7 @@ func main() {
 
 	//* transactions
 	transactionsRepository := transaction.NewRepository(db)
-	transactionsService := transaction.NewService(transactionsRepository, campaignRepository)
+	transactionsService := transaction.NewService(transactionsRepository, campaignRepository, paymentService)
 	transactionsHandler := handler.NewTransactionsHandler(transactionsService)
 
 	router := gin.Default()
@@ -56,8 +58,9 @@ func main() {
 	app.GET("/auth/user/campaign", authMiddleware, campaignHandler.UserHaveCampaigns)
 	app.POST("/campaign/upload/images", authMiddleware, campaignHandler.UploadCampaignImages)
 
-	app.GET("/transactions/campaign/:id", authMiddleware, transactionsHandler.GetByCampaignID)
-	app.GET("/transactions/user", authMiddleware, transactionsHandler.GetTransactionsByUserID)
+	app.GET("/transaction/campaign/:id", authMiddleware, transactionsHandler.GetByCampaignID)
+	app.GET("/transactions", authMiddleware, transactionsHandler.GetTransactionsByUserID)
+	app.POST("/transaction", authMiddleware, transactionsHandler.CreateTransaction)
 
 	router.Run(":8080")
 }
