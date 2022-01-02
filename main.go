@@ -52,6 +52,7 @@ func main() {
 	app.POST("/login", userHandler.Login)
 	app.POST("/email_checker", userHandler.CheckEmail)
 	app.POST("/upload", authMiddleware, userHandler.UpdateAvatar)
+	app.GET("/user/fetch", authMiddleware, userHandler.FetchUser)
 
 	app.GET("/campaign", campaignHandler.FindAllCampaign)
 	app.POST("/campaign", authMiddleware, campaignHandler.InputInsertCampaign)

@@ -128,3 +128,17 @@ func (h *userHandler) UpdateAvatar(c *gin.Context) {
 	responseJSON := helper.APIResponse("success update avatar", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, responseJSON)
 }
+
+func (h *userHandler) FetchUser(c *gin.Context) {
+	currentUser := c.MustGet("user").(user.User)
+	existUser, err := h.service.FindUserById(currentUser.ID)
+	if err != nil {
+		data := gin.H{"errors": err.Error()}
+		responseJSON := helper.APIResponse("failed fetch user", http.StatusBadRequest, "success", data)
+		c.JSON(http.StatusBadRequest, responseJSON)
+		return
+	}
+	formatterUser := user.FormatUser(existUser, "")
+	responseJSON := helper.APIResponse("success fetch user", http.StatusOK, "success", formatterUser)
+	c.JSON(http.StatusOK, responseJSON)
+}
