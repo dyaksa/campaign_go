@@ -45,8 +45,7 @@ func main() {
 	transactionsHandler := handler.NewTransactionsHandler(transactionsService)
 
 	router := gin.Default()
-	config := cors.DefaultConfig()
-	router.Use(cors.New(config))
+	router.Use(cors.Default())
 	router.Static("/images", "./images")
 	app := router.Group("/api/v1")
 	app.POST("/register", userHandler.RegisterUser)
