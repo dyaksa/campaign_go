@@ -1,6 +1,8 @@
 package payment
 
 import (
+	"os"
+
 	midtrans "github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/snap"
 )
@@ -18,7 +20,7 @@ func NewPaymantService() *service {
 
 func (s *service) GetToken(transaction Transaction) (string, error) {
 	var midSnap snap.Client
-	midSnap.New("SB-Mid-server-GSQWU8_rZvUSggEKRnMlSYQ-", midtrans.Sandbox)
+	midSnap.New(os.Getenv("MIDTRANS_ACCESS_KEY"), midtrans.Sandbox)
 	params := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
 			OrderID:  transaction.Code,

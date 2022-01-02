@@ -9,14 +9,21 @@ import (
 	"campaignproject/transaction"
 	"campaignproject/user"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	dsn := "root:@tcp(127.0.0.1:3306)/campaign_project?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -66,5 +73,5 @@ func main() {
 	app.POST("/transaction", authMiddleware, transactionsHandler.CreateTransaction)
 	app.POST("/transaction/notification", transactionsHandler.PaymentNotification)
 
-	router.Run(":8080")
+	router.Run(":" + os.Getenv("PORT"))
 }
