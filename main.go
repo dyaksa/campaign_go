@@ -10,6 +10,7 @@ import (
 	"campaignproject/user"
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -44,6 +45,8 @@ func main() {
 	transactionsHandler := handler.NewTransactionsHandler(transactionsService)
 
 	router := gin.Default()
+	config := cors.DefaultConfig()
+	router.Use(cors.New(config))
 	router.Static("/images", "./images")
 	app := router.Group("/api/v1")
 	app.POST("/register", userHandler.RegisterUser)
