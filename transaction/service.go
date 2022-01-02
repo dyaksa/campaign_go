@@ -12,6 +12,7 @@ type Service interface {
 	GetTransacationsByCampaignID(input GetCampaignID, paginate helper.Pagination) (*helper.Pagination, error)
 	GetTransactionsByUserID(campaignID int, paginate helper.Pagination) (*helper.Pagination, error)
 	SaveTransaction(input InputTransaction) (Transaction, error)
+	PaymentProcess(input TransactionProcessInput) error
 }
 
 type service struct {
@@ -85,4 +86,48 @@ func (s *service) SaveTransaction(input InputTransaction) (Transaction, error) {
 		return transaction, err
 	}
 	return transaction, nil
+}
+
+func (s *service) PaymentProcess(input TransactionProcessInput) error {
+	orderID := input.OrderID
+	transaction, err := s.repository.GetByOrderID(orderID)
+	if err != nil {
+		return err
+	}
+	if input.Status == "capture" {
+		if input.PaymentType == "credit_card" && input.FraudStatus == "accept" {
+			transaction.Status = "paid"
+		} else {
+			transaction.Status = "denied"
+		}
+	}
+	if input.Status == "settlement" {
+		transaction.Status = "paid"
+	}
+	if input.Status == "deny" {
+		transaction.Status = "denied"
+	}
+	if input.Status == "expire" {
+		transaction.Status = "expired"
+	}
+	if input.Status == "cancel" {
+		transaction.Status = "cancelled"
+	}
+	transaction, err = s.repository.Update(transaction)
+	if err != nil {
+		return err
+	}
+	if transaction.Status == "paid" {
+		campaign, err := s.campaignRepository.FindById(transaction.CampaignID)
+		if err != nil {
+			return err
+		}
+		campaign.BackerCount += 1
+		campaign.CurrentAmount += input.Amount
+		_, err = s.campaignRepository.Updated(campaign)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

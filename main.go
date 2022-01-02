@@ -61,6 +61,7 @@ func main() {
 	app.GET("/transaction/campaign/:id", authMiddleware, transactionsHandler.GetByCampaignID)
 	app.GET("/transactions", authMiddleware, transactionsHandler.GetTransactionsByUserID)
 	app.POST("/transaction", authMiddleware, transactionsHandler.CreateTransaction)
+	app.POST("/transaction/notification", transactionsHandler.PaymentNotification)
 
 	router.Run(":8080")
 }

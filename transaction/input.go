@@ -15,3 +15,11 @@ type InputTransaction struct {
 	Email      string
 	Name       string
 }
+
+type TransactionProcessInput struct {
+	OrderID     string `json:"order_id"`
+	PaymentType string `json:"payment_type"`
+	Amount      int    `json:"gross_amount"`
+	Status      string `json:"transaction_status"`
+	FraudStatus string `json:"fraud_status"`
+}
