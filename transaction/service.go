@@ -94,23 +94,23 @@ func (s *service) PaymentProcess(input TransactionProcessInput) error {
 	if err != nil {
 		return err
 	}
-	if input.Status == "capture" {
+	if input.TransactionStatus == "capture" {
 		if input.PaymentType == "credit_card" && input.FraudStatus == "accept" {
 			transaction.Status = "paid"
 		} else {
 			transaction.Status = "denied"
 		}
 	}
-	if input.Status == "settlement" {
+	if input.TransactionStatus == "settlement" {
 		transaction.Status = "paid"
 	}
-	if input.Status == "deny" {
+	if input.TransactionStatus == "deny" {
 		transaction.Status = "denied"
 	}
-	if input.Status == "expire" {
+	if input.TransactionStatus == "expire" {
 		transaction.Status = "expired"
 	}
-	if input.Status == "cancel" {
+	if input.TransactionStatus == "cancel" {
 		transaction.Status = "cancelled"
 	}
 	transaction, err = s.repository.Update(transaction)
@@ -123,7 +123,7 @@ func (s *service) PaymentProcess(input TransactionProcessInput) error {
 			return err
 		}
 		campaign.BackerCount += 1
-		campaign.CurrentAmount += input.Amount
+		campaign.CurrentAmount += transaction.Amount
 		_, err = s.campaignRepository.Updated(campaign)
 		if err != nil {
 			return err
