@@ -17,9 +17,9 @@ type InputTransaction struct {
 }
 
 type TransactionProcessInput struct {
-	OrderID     string `query:"order_id"`
-	PaymentType string `query:"payment_type"`
-	Amount      int    `query:"gross_amount"`
-	Status      string `query:"transaction_status"`
-	FraudStatus string `query:"fraud_status"`
+	OrderID     string `json:"order_id"`
+	PaymentType string `json:"payment_type"`
+	Amount      int    `json:"gross_amount"`
+	Status      string `json:"transaction_status"`
+	FraudStatus string `json:"fraud_status"`
 }
