@@ -93,7 +93,7 @@ func (h *transactionsHandler) CreateTransaction(c *gin.Context) {
 
 func (h *transactionsHandler) PaymentNotification(c *gin.Context) {
 	input := transaction.TransactionProcessInput{}
-	err := c.ShouldBindJSON(&input)
+	err := c.ShouldBindQuery(&input)
 	if err != nil {
 		errors := helper.FormatterErroValidation(err)
 		responseJSON := helper.APIResponse("failed payment notification", http.StatusUnprocessableEntity, "errors", errors)
