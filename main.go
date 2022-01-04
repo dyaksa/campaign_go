@@ -10,6 +10,7 @@ import (
 	"campaignproject/user"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gin-contrib/cors"
@@ -57,6 +58,10 @@ func main() {
 	router.Use(cors.Default())
 	router.Static("/images", "./images")
 	app := router.Group("/api/v1")
+	app.GET("/", func(c *gin.Context) {
+		data := gin.H{"message": "welcome to campaign server"}
+		c.JSON(http.StatusOK, data)
+	})
 	app.POST("/register", userHandler.RegisterUser)
 	app.POST("/login", userHandler.Login)
 	app.POST("/email_checker", userHandler.CheckEmail)
