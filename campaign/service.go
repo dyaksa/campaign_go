@@ -40,7 +40,7 @@ func (s *service) InputInsertCampaign(input CampaignInput) (Campaign, error) {
 	campaign.Slug = slug.Make(titleSlug)
 
 	campaign.BackerCount = 0
-	campaign.CurrentAmount = input.CurrentAmount
+	campaign.CurrentAmount = 0
 	campaign.GoalAmount = input.GoalAmount
 	newCampaign, err := s.repository.Save(campaign)
 	if err != nil {

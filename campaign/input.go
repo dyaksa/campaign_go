@@ -9,7 +9,6 @@ type CampaignInput struct {
 	Description      string `json:"description" binding:"required"`
 	Perks            string `json:"perks" binding:"required"`
 	GoalAmount       int    `json:"goal_amount" binding:"required"`
-	CurrentAmount    int    `json:"current_amount"`
 }
 
 type DetailCampaignInput struct {
