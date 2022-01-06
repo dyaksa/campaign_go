@@ -39,7 +39,7 @@ func (s *service) InputInsertCampaign(input CampaignInput) (Campaign, error) {
 	titleSlug := fmt.Sprintf("%s-%s", input.Name, time)
 	campaign.Slug = slug.Make(titleSlug)
 
-	campaign.BackerCount = input.BackerCount
+	campaign.BackerCount = 0
 	campaign.CurrentAmount = input.CurrentAmount
 	campaign.GoalAmount = input.GoalAmount
 	newCampaign, err := s.repository.Save(campaign)
@@ -93,7 +93,7 @@ func (s *service) UpdateCampaign(InputID user.User, campaignID DetailCampaignInp
 	campaign.Name = input.Name
 	campaign.ShortDescription = input.ShortDescription
 	campaign.Description = input.Description
-	campaign.BackerCount = input.BackerCount
+	campaign.BackerCount = 0
 	campaign.GoalAmount = input.GoalAmount
 	campaign.User = InputID
 	saved, err := s.repository.Updated(campaign)
